@@ -1,0 +1,20 @@
+tasks:
+  up:
+    cmd: docker-compose up -d
+    desc: Service Running
+  down:
+    cmd: docker-compose down --remove-orphans
+    desc: Service Down
+  ps:
+    cmd: docker-compose ps
+    desc: List Service containers
+  top:
+    cmd: docker-compose top
+    desc: Display the running processes
+  logs:
+    cmd: docker-compose logs --follow
+    desc: Show Service Log
+  stats:
+    cmd: docker-compose ps -q | xargs docker stats
+    desc: Display a live stream of container(s) resource usage statistics
+

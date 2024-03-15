@@ -1,0 +1,56 @@
+version: "3.9"
+services:
+  dozzle:
+    restart: always
+    image: amir20/dozzle:latest
+    healthcheck:
+      test: ["CMD", "/dozzle", "healthcheck"]
+      interval: 3s
+      timeout: 30s
+      retries: 5
+      start_period: 30s
+    environment:
+      DOZZLE_FILTER: status=running
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    labels:
+      - "autoheal=true"
+    logging:
+      driver: json-file
+      options:
+        max-file: "1"
+        max-size: 3m
+  tunnel:
+    restart: always
+    image: zoeyvid/cloudflared:latest
+    command: tunnel run
+    environment:
+      TUNNEL_TOKEN: ${TUNNEL_TOKEN}
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9173/metrics || exit 1"]
+      start_period: 3s
+      retries: 30
+      timeout: 5s
+      interval: 30s
+    depends_on:
+      dozzle:
+        condition: service_healthy
+    labels:
+      - "autoheal=true"
+    logging:
+      driver: json-file
+      options:
+        max-file: "1"
+        max-size: 3m
+  autoheal:
+    image: willfarrell/autoheal:latest
+    tty: true
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    logging:
+      driver: json-file
+      options:
+        max-file: "1"
+        max-size: 3m
+
