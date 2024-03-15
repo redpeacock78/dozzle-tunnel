@@ -12,7 +12,7 @@ services:
     environment:
       DOZZLE_FILTER: status=running
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/run/docker.sock:/var/run/docker.sock:ro
     labels:
       - "autoheal=true"
     logging:
